@@ -1,0 +1,115 @@
+pragma language_version >=0.22.0;
+
+import CompactStandardLibrary;
+
+// Astraloom publishes the rules of a temporary credential window, never its witness values.
+export ledger signal_threshold: Uint<64>;
+export ledger constellation_id: Bytes<32>;
+export ledger closes_at: Uint<64>;
+export ledger curator_id: Bytes<32>;
+export sealed ledger operator_commitment: Bytes<32>;
+export ledger loom_active: Boolean;
+export ledger verified_signals: Counter;
+export ledger signal_capacity: Uint<32>;
+export ledger spent_markers: Set<Bytes<32>>;
+export ledger used_constellations: Set<Bytes<32>>;
+export ledger signal_log: Map<Bytes<32>, Bytes<32>>;
+export sealed ledger edition: Bytes<32>;
+
+// Witnesses are supplied by the browser session and are not ledger arguments.
+witness private_signal(): Uint<64>;
+witness private_marker_secret(): Bytes<32>;
+witness operator_secret(): Bytes<32>;
+
+constructor(
+    threshold: Uint<64>,
+    constellation: Bytes<32>,
+    deadline: Uint<64>,
+    curator: Bytes<32>,
+    operator_hash: Bytes<32>,
+    capacity: Uint<32>
+) {
+    assert(threshold <= 100, "Signal threshold must be between 0 and 100");
+    assert(capacity > 0, "Signal capacity must be positive");
+    assert(deadline > 0, "Closing time must be positive");
+    assert(constellation != default<Bytes<32>>, "Constellation identifier must be nonzero");
+    assert(operator_hash != default<Bytes<32>>, "Operator commitment must be nonzero");
+    used_constellations.insert(disclose(constellation));
+    signal_threshold = disclose(threshold);
+    constellation_id = disclose(constellation);
+    closes_at = disclose(deadline);
+    curator_id = disclose(curator);
+    operator_commitment = disclose(operator_hash);
+    loom_active = disclose(true);
+    signal_capacity = disclose(capacity);
+    edition = disclose(pad(32, "Astraloom:v1.0"));
+}
+
+// Proves that a private signal clears the public rule without storing the signal.
+export circuit weave_signal(): [] {
+    assert(disclose(loom_active), "The loom is paused");
+    assert(blockTimeLt(disclose(closes_at)), "This constellation has closed");
+    assert(disclose(verified_signals) < disclose(signal_capacity), "Signal capacity reached");
+
+    const signal = private_signal();
+    assert(signal <= 100, "Signal must be between 0 and 100");
+    assert(signal >= signal_threshold, "Signal threshold not met");
+
+    const marker_secret = private_marker_secret();
+    const marker = make_signal_marker(marker_secret, constellation_id);
+    assert(!spent_markers.member(disclose(marker)), "This marker has already been woven");
+
+    spent_markers.insert(disclose(marker));
+    signal_log.insert(disclose(marker), disclose(constellation_id));
+    verified_signals.increment(1);
+}
+
+// Operator-only administration, authenticated by a private witness.
+export circuit retune_loom(
+    new_threshold: Uint<64>,
+    new_constellation: Bytes<32>,
+    new_deadline: Uint<64>,
+    new_curator: Bytes<32>,
+    new_capacity: Uint<32>
+): [] {
+    const secret = operator_secret();
+    assert(operator_commitment == operator_public_key(secret), "Operator authorization failed");
+    assert(new_threshold <= 100, "Signal threshold must be between 0 and 100");
+    assert(disclose(new_capacity) > verified_signals, "Capacity must exceed signals already woven");
+    assert(blockTimeLt(disclose(new_deadline)), "New closing time must be in the future");
+    assert(new_constellation != default<Bytes<32>>, "Constellation identifier must be nonzero");
+    assert(!used_constellations.member(disclose(new_constellation)), "Constellation identifier already used");
+    used_constellations.insert(disclose(new_constellation));
+    signal_threshold = disclose(new_threshold);
+    constellation_id = disclose(new_constellation);
+    closes_at = disclose(new_deadline);
+    curator_id = disclose(new_curator);
+    signal_capacity = disclose(new_capacity);
+    loom_active = disclose(true);
+}
+
+export circuit pause_loom(): [] {
+    const secret = operator_secret();
+    assert(operator_commitment == operator_public_key(secret), "Operator authorization failed");
+    loom_active = disclose(false);
+}
+
+export circuit resume_loom(): [] {
+    const secret = operator_secret();
+    assert(operator_commitment == operator_public_key(secret), "Operator authorization failed");
+    assert(blockTimeLt(disclose(closes_at)), "This constellation has closed");
+    assert(disclose(verified_signals) < disclose(signal_capacity), "Signal capacity reached");
+    loom_active = disclose(true);
+}
+
+export pure circuit operator_public_key(secret: Bytes<32>): Bytes<32> {
+    return persistentHash<Vector<2, Bytes<32>>>([pad(32, "astraloom:operator:v1"), secret]);
+}
+
+export pure circuit make_signal_marker(secret: Bytes<32>, constellation: Bytes<32>): Bytes<32> {
+    return persistentHash<Vector<3, Bytes<32>>>([
+        pad(32, "astraloom:marker:v1"),
+        secret,
+        constellation
+    ]);
+}
