@@ -1,0 +1,10 @@
+import { readFile } from 'node:fs/promises';
+import { ledger } from '../contracts/managed/astraloom/contract/index.js';
+import { ContractState } from '@midnight-ntwrk/compact-runtime';
+const address = process.env.ASTRALOOM_CONTRACT_ADDRESS;
+if (!address) throw new Error('Set ASTRALOOM_CONTRACT_ADDRESS to inspect a deployed contract.');
+const response = await fetch('https://indexer.preprod.midnight.network/api/v4/graphql', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ query: 'query($address: HexEncoded!) { contractAction(address: $address) { state } }', variables: { address } }) });
+if (!response.ok) throw new Error(`Indexer request failed: ${response.status}`);
+const payload = await response.json(); const raw = payload.data?.contractAction?.state; if (!raw) throw new Error('No indexed Astraloom state found.');
+const state = ledger(ContractState.deserialize(Uint8Array.from(Buffer.from(raw, 'hex'))).data);
+console.log(JSON.stringify({ address, threshold: state.signal_threshold.toString(), signals: state.verified_signals.toString(), active: state.loom_active }, null, 2));
