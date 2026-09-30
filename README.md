@@ -4,10 +4,19 @@
 
 Astraloom is an experimental privacy-first dApp for Midnight Network. It lets a visitor prove that a private, self-attested signal clears a public threshold. The Compact contract records only the public policy, a bounded proof marker, and a counter; the raw signal and marker secret are not written to public ledger state.
 
-> Astraloom is deployed on Midnight Preprod network.
+> Astraloom is live and deployed on Midnight Preprod network.
 >
-> - **Preprod Deployment Transaction**: [`315e491146083a443455ccf77a16c2d0e2f9281f1efcdf51d3b64daa0be2b861`](https://explorer.1am.xyz/tx/315e491146083a443455ccf77a16c2d0e2f9281f1efcdf51d3b64daa0be2b861?network=preprod)
-> - **Preprod Contract Address**: `315e491146083a443455ccf77a16c2d0e2f9281f1efcdf51d3b64daa0be2b861` *(update if different from tx id)*
+> - 🌐 **Live Application**: [https://astraloom.netlify.app/](https://astraloom.netlify.app/)
+> - 🎬 **Demo Video Walkthrough**: [Watch on Google Drive](https://drive.google.com/file/d/1RVejHjSjPO02IPJ1c8tMAx8ZMlQH_zJ4/view?usp=sharing)
+> - 📜 **Preprod Deployment Transaction**: [`315e491146083a443455ccf77a16c2d0e2f9281f1efcdf51d3b64daa0be2b861`](https://explorer.1am.xyz/tx/315e491146083a443455ccf77a16c2d0e2f9281f1efcdf51d3b64daa0be2b861?network=preprod)
+> - ⚡ **Preprod Contract Address**: `315e491146083a443455ccf77a16c2d0e2f9281f1efcdf51d3b64daa0be2b861` *(update if different from tx id)*
+
+## Interface Preview
+
+| Observatory Home & Signal Weaving | Selective Disclosure & Privacy Map |
+|:---:|:---:|
+| ![Astraloom Home Hero](snaps/1.png) | ![Astraloom Privacy Map](snaps/2.png) |
+
 
 ## Product idea — Level 3 selection
 

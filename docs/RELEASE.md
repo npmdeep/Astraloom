@@ -6,14 +6,14 @@ Use this file as the single source of truth for Level 1–4 evidence. Blank fiel
 Application version: 0.1.0
 Release commit SHA:
 Build timestamp:
-Network: preview / preprod
-Contract address:
-Deployment transaction:
+Network: preprod
+Contract address: 315e491146083a443455ccf77a16c2d0e2f9281f1efcdf51d3b64daa0be2b861
+Deployment transaction: 315e491146083a443455ccf77a16c2d0e2f9281f1efcdf51d3b64daa0be2b861
 Successful weave_signal transaction:
-Hosted URL:
+Hosted URL: https://astraloom.netlify.app/
 Hosted build identifier:
 CI run URL:
-Demo video URL:
+Demo video URL: https://drive.google.com/file/d/1RVejHjSjPO02IPJ1c8tMAx8ZMlQH_zJ4/view?usp=sharing
 Proposal approval URL:
 Product X profile URL:
 ```

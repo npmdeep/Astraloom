@@ -23,3 +23,5 @@ midnight-level-db/
 .vscode/
 __agent__/
 .agents/
+snaps/*.mp4
+*.mp4
