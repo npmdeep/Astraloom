@@ -4,7 +4,10 @@
 
 Astraloom is an experimental privacy-first dApp for Midnight Network. It lets a visitor prove that a private, self-attested signal clears a public threshold. The Compact contract records only the public policy, a bounded proof marker, and a counter; the raw signal and marker secret are not written to public ledger state.
 
-> Astraloom is a working project scaffold for Preview/Preprod. Real contract addresses, hosted demo URLs, screenshots, video, X profile, proposal approval, and commit history are intentionally left for the owner to produce after deployment.
+> Astraloom is deployed on Midnight Preprod network.
+>
+> - **Preprod Deployment Transaction**: [`315e491146083a443455ccf77a16c2d0e2f9281f1efcdf51d3b64daa0be2b861`](https://explorer.1am.xyz/tx/315e491146083a443455ccf77a16c2d0e2f9281f1efcdf51d3b64daa0be2b861?network=preprod)
+> - **Preprod Contract Address**: `315e491146083a443455ccf77a16c2d0e2f9281f1efcdf51d3b64daa0be2b861` *(update if different from tx id)*
 
 ## Product idea — Level 3 selection
 
